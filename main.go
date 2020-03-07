@@ -93,12 +93,15 @@ func (proxy *proxy) registry(writer http.ResponseWriter, request *http.Request) 
 }
 
 func (proxy *proxy) portus(writer http.ResponseWriter, request *http.Request) {
+	log.Printf("Received request for: %s", request.URL.Path)
 	if strings.HasPrefix(request.URL.Path,"/v2") {
-		if !strings.HasPrefix(request.URL.Path,"/v2/tokens") && !strings.HasPrefix(request.URL.Path,"/v2/webhooks"){
+		if !strings.HasPrefix(request.URL.Path,"/v2/tokens") && !strings.HasPrefix(request.URL.Path,"/v2/webhooks") {
+			log.Print("Passing to registry")
 			proxy.registry(writer, request)
 			return
 		}
 	}
+	log.Print("Passing to portus")
 	v2URL, err := url.Parse(fmt.Sprintf("http://%s:%d", proxy.portusHost, proxy.portusPort))
 	if err != nil {
 		log.Fatal("Unable to create url for registry")
