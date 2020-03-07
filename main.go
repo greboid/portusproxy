@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -60,9 +61,6 @@ func (proxy *proxy) setupWeb() {
 	log.Print("Setting up proxy")
 	proxy.mux = http.NewServeMux()
 	proxy.mux.HandleFunc("/", proxy.portus)
-	proxy.mux.HandleFunc("/v2/token", proxy.portus)
-	proxy.mux.HandleFunc("/v2/webhooks", proxy.portus)
-	proxy.mux.HandleFunc("/v2", proxy.registry)
 	log.Print("Finished setting up proxy")
 }
 
@@ -95,6 +93,12 @@ func (proxy *proxy) registry(writer http.ResponseWriter, request *http.Request) 
 }
 
 func (proxy *proxy) portus(writer http.ResponseWriter, request *http.Request) {
+	if strings.HasPrefix(request.URL.Path,"/v2") {
+		if !strings.HasPrefix(request.URL.Path,"/v2/tokens") && !strings.HasPrefix(request.URL.Path,"/v2/webhooks"){
+			proxy.registry(writer, request)
+			return
+		}
+	}
 	v2URL, err := url.Parse(fmt.Sprintf("http://%s:%d", proxy.portusHost, proxy.portusPort))
 	if err != nil {
 		log.Fatal("Unable to create url for registry")
