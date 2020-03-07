@@ -49,7 +49,7 @@ func (proxy *proxy) setupVars() {
 	if err != nil {
 		log.Fatal("PORTUS_PORT must be int")
 	}
-	proxy.port, err = strconv.Atoi(getEnv("PROXY_PORT", "8000"))
+	proxy.port, err = strconv.Atoi(getEnv("PROXY_PORT", "8080"))
 	if err != nil {
 		log.Fatal("PROXY_PORT must be int")
 	}
