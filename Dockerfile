@@ -1,5 +1,6 @@
-FROM golang:latest as builder
+FROM registry.greboid.com/mirror/golang:latest as builder
 WORKDIR /app
+COPY go.mod /app
 COPY main.go /app
 RUN CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' -o main .
 
